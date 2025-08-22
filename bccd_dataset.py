@@ -5,29 +5,36 @@ from torchvision.io import decode_image
 from torch.utils.data import Dataset
 import xml.etree.ElementTree as ET
 import cv2
-import pdb
+import yaml
 
+# load label map from YAML file
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+LABEL_MAP = config["labels"]
+
+# BCCD Dataset class for loading images and annotations
 def parse_annotation_xml(xml_file_path):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
     annotations = []
 
-    # size_element = root.find('size')
-    # width = int(size_element.find('width').text)
-    # height = int(size_element.find('height').text)
-
+    # Extract bounding boxes and labels from the XML
     for obj in root.findall('object'):
         label = obj.find('name').text
+        int_label = LABEL_MAP.get(label, -1)  # Get the integer label from the label map
+        if int_label == -1:
+            continue
+
         bndbox = obj.find('bndbox')
         xmin = int(bndbox.find('xmin').text)
         ymin = int(bndbox.find('ymin').text)
         xmax = int(bndbox.find('xmax').text)
         ymax = int(bndbox.find('ymax').text)
-        
+
         annotations.append({
-            'boxes': [xmin, ymin, xmax, ymax],
-            'labels': label
+            'boxes': torch.tensor([xmin, ymin, xmax, ymax], dtype=torch.float32),
+            'labels': torch.tensor(int_label, dtype=torch.int64)  # Assuming labels are integers
         })
     
     return annotations
@@ -48,6 +55,11 @@ class BCCD_DATASET(Dataset):
         with open(os.path.join(self.img_name_dir, f'{mode}.txt'), 'r') as f:
             self.name_img_ls = [line.strip() for line in f.readlines()]
             
+        # load annotations dictionary
+        self.annotations = {}
+        for name in self.name_img_ls:
+            anno_file = os.path.join(self.anno_name_dir, name + '.xml')
+            self.annotations[name] = parse_annotation_xml(anno_file)   
 
     def __len__(self):
         return len(self.name_img_ls)
@@ -65,16 +77,14 @@ class BCCD_DATASET(Dataset):
         # Load image
         img = cv2.imread(img_file)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = torch.tensor(img, dtype=torch.float32).permute(2, 0, 1)  # Convert to CxHxW format
         
-        
+        # Apply transformations if any
         if self.transform:
             img = self.transform(img)
         
         # Load annotations
-        anno = parse_annotation_xml(anno_file)
-        
-        # pdb.set_trace()  # Debugging point
-        
+        anno = self.annotations[self.name_img_ls[idx]]
         
         return img, anno
     
@@ -82,5 +92,5 @@ if __name__ == "__main__":
     dataset = BCCD_DATASET(root='BCCD_Dataset', mode='train')
     img, anno = dataset[0]
     print(img.shape)
-    print(anno)  # Print first annotation for debugging
+    print(anno[0])  # Print first annotation for debugging
     
