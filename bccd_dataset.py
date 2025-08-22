@@ -25,13 +25,13 @@ def parse_annotation_xml(xml_file_path):
         int_label = LABEL_MAP.get(label, -1)  # Get the integer label from the label map
         if int_label == -1:
             continue
-        
+
         bndbox = obj.find('bndbox')
         xmin = int(bndbox.find('xmin').text)
         ymin = int(bndbox.find('ymin').text)
         xmax = int(bndbox.find('xmax').text)
         ymax = int(bndbox.find('ymax').text)
-        
+
         annotations.append({
             'boxes': torch.tensor([xmin, ymin, xmax, ymax], dtype=torch.float32),
             'labels': torch.tensor(int_label, dtype=torch.int64)  # Assuming labels are integers
