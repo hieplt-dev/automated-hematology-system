@@ -1,4 +1,6 @@
-import cv2, numpy as np
+import cv2
+import numpy as np
+
 
 def visualize_img(img_chw_tensor, boxes_tensor, labels_tensor):
     # img: torch.Tensor(C,H,W) in [0,1]

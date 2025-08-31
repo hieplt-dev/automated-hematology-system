@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torchinfo import summary
 from torchvision import transforms
 import random
-import tqdm
+from tqdm import tqdm
 from bccd_dataset import BCCD_DATASET
 from model import BCCD_Model
 from utils.load_config import load_config
@@ -129,8 +129,7 @@ if __name__ == "__main__":
             model.train()
             running_loss = 0.0
             
-            train_pg_bar = tqdm.tqdm(train_loader, colour="cyan",
-                         desc=f"Train - Epoch {epoch+1}/{epochs}")
+            train_pg_bar = tqdm(train_loader, colour="cyan")
 
             for step, (images, targets) in enumerate(train_pg_bar):
                 images  = [img.to(device) for img in images]    # list of tensor
@@ -145,33 +144,30 @@ if __name__ == "__main__":
 
                 running_loss += losses.item()
 
-                train_pg_bar.set_postfix(batch_loss=f"{losses.item():.4f}",
-                             avg_loss=f"{(running_loss/(step+1)):.4f}")
+                # update progress bar
+                train_pg_bar.set_description(f"Train-epoch {epoch+1}/{epochs}.Batch_loss: {losses.item():.2f}.Avg_loss: {(running_loss/(step+1)):.2f}")
                 
                 if step % 5 == 0:
                     mlflow.log_metrics({"train_batch_loss": losses.item()},
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
-            print(f"Epoch {epoch+1}/{epochs} | Train Loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
             # validation
             val_loss_sum = 0.0
             with torch.no_grad():
-                val_pg_bar = tqdm.tqdm(val_loader, colour="blue")
-                for i, (images, targets) in enumerate(val_loader):
+                val_pg_bar = tqdm(val_loader, colour="blue")
+                for i, (images, targets) in enumerate(val_pg_bar):
                     images  = [img.to(device) for img in images]
                     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
                     loss_dict = model(images, targets)
                     batch_loss = sum(loss for loss in loss_dict.values())
                     val_loss_sum += batch_loss
                     
-                    val_pg_bar.set_postfix(batch_loss=f"{batch_loss:.4f}",
-                               avg_loss=f"{(val_loss_sum/i):.4f}")
+                    val_pg_bar.set_description(f"Val-epoch {epoch+1}/{epochs}.Batch_loss: {batch_loss.item():.2f}.Avg_loss: {(val_loss_sum/(i+1)):.2f}")
                     
             val_loss = val_loss_sum / max(1, len(val_loader))
-            print(f"Val Loss  : {val_loss:.4f}")
             mlflow.log_metric("val_loss", val_loss, step=epoch)
             
             # save best model
@@ -179,7 +175,7 @@ if __name__ == "__main__":
                 best_val_loss = val_loss
 
                 # save low checkpoint
-                ckpt_path = f"outputs/best_epoch_{epoch+1}.pt"
+                ckpt_path = f"outputs/best_epoch.pt"
                 torch.save({
                     "epoch": epoch+1,
                     "model_state": model.state_dict(),
