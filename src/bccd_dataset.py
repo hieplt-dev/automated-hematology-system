@@ -11,7 +11,11 @@ from PIL import Image
 import numpy as np
 from utils.load_config import load_config
 
-LABEL_MAP = load_config('config.yaml')['dataset']['labels']
+LABEL_MAP = {
+    "RBC": 1,   # Red Blood Cell
+    "WBC": 2,   # White Blood Cell
+    "Platelets": 3  # Platelets
+}
 
 def parse_annotation_xml(xml_path):
     tree = ET.parse(xml_path)
