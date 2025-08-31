@@ -1,6 +1,7 @@
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
+
 class BCCD_Model:
     def __init__(self, num_classes):
         # Load a pre-trained Faster R-CNN model with a ResNet-50 backbone
