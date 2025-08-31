@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # use CLI if different from YAML
     epochs = args.epochs if args.epochs != tr_cfg['epochs'] else tr_cfg['epochs']
     batch_size = args.batch_size if args.batch_size != tr_cfg['batch_size'] else tr_cfg['batch_size']
-    tracking_uri = args.tracking_uri if args.tracking_uri != log_cfg['tracking_uri'] else log_cfg['tracking_uri']
+    tracking_uri = log_cfg['tracking_uri']
     
     lr = tr_cfg['learning_rate']
     optimizer_nm = tr_cfg['optimizer']
@@ -159,6 +159,7 @@ if __name__ == "__main__":
             val_loss_sum = 0.0
             with torch.no_grad():
                 val_pg_bar = tqdm(val_loader, colour="blue")
+
                 for i, (images, targets) in enumerate(val_pg_bar):
                     images  = [img.to(device) for img in images]
                     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
