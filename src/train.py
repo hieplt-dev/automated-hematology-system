@@ -22,10 +22,11 @@ from albumentations.pytorch import ToTensorV2
 def get_args():
     """Parse CLI arguments"""
     parser = ArgumentParser(description='args for training')
+    parser.add_argument("--config", type=str, default='config.yaml', help='path to config file')
     parser.add_argument("--epochs", type=int, default=10, help='number of epochs')
     parser.add_argument("--batch_size", type=int, default=4, help='batch size')
+    parser.add_argument("--tracking_uri", type=str, default='http://127.0.1:5000', help='MLflow tracking URI')
     parser.add_argument("--checkpoint", "-c", type=str, default='models/checkpoint.pt', help='path to save checkpoint')
-    parser.add_argument("--tracking_uri", type=str, default='http://127.0.0.1:5000', help='MLflow tracking server URI')
     args = parser.parse_args()
     return args
 
@@ -47,7 +48,7 @@ def collate_fn(batch):
 if __name__ == "__main__":
     # load CLI & config yaml
     args = get_args()
-    config = load_config('config.yaml')
+    config = load_config(args.config )
 
     ds_cfg = config['dataset']
     tr_cfg = config['training']
