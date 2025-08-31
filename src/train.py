@@ -25,7 +25,6 @@ def get_args():
     parser.add_argument("--epochs", type=int, default=10, help='number of epochs')
     parser.add_argument("--batch_size", type=int, default=4, help='batch size')
     parser.add_argument("--checkpoint", "-c", type=str, default='models/checkpoint.pt', help='path to save checkpoint')
-    parser.add_argument("--tracking_uri", type=str, default='http://127.0.0.1:5000', help='MLflow tracking server URI')
     args = parser.parse_args()
     return args
 
@@ -61,7 +60,7 @@ if __name__ == "__main__":
     # use CLI if different from YAML
     epochs = args.epochs if args.epochs != tr_cfg['epochs'] else tr_cfg['epochs']
     batch_size = args.batch_size if args.batch_size != tr_cfg['batch_size'] else tr_cfg['batch_size']
-    tracking_uri = args.tracking_uri if args.tracking_uri != log_cfg['tracking_uri'] else log_cfg['tracking_uri']
+    tracking_uri = log_cfg['tracking_uri']
     
     lr = tr_cfg['learning_rate']
     optimizer_nm = tr_cfg['optimizer']
