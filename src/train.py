@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torchinfo import summary
 from torchvision import transforms
 import random
-import tqdm
+from tqdm import tqdm
 from bccd_dataset import BCCD_DATASET
 from model import BCCD_Model
 from utils.load_config import load_config
@@ -129,7 +129,7 @@ if __name__ == "__main__":
             model.train()
             running_loss = 0.0
             
-            train_pg_bar = tqdm.tqdm(train_loader, colour="cyan",
+            train_pg_bar = tqdm(train_loader, colour="cyan",
                          desc=f"Train - epoch {epoch+1}/{epochs}", 
                          dynamic_ncols=True, leave=False,)
 
@@ -154,14 +154,14 @@ if __name__ == "__main__":
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
-            
+
             tqdm.write(f"Epoch {epoch+1}/{epochs} | Train loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
             # validation
             val_loss_sum = 0.0
             with torch.no_grad():
-                val_pg_bar = tqdm.tqdm(val_loader, 
+                val_pg_bar = tqdm(val_loader,
                                         colour="blue", 
                                         desc=f"Val - epoch {epoch+1}/{epochs}",
                                         dynamic_ncols=True,
