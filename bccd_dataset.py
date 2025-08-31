@@ -22,6 +22,7 @@ def parse_annotation_xml(xml_path):
         label = LABEL_MAP.get(name, -1)
         if label == -1: 
             continue
+
         b = obj.find("bndbox")
         xmin = float(b.find("xmin").text)
         ymin = float(b.find("ymin").text)
