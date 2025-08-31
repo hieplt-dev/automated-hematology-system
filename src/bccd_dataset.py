@@ -2,13 +2,14 @@ import os
 import xml.etree.ElementTree as ET
 
 import cv2
+import numpy as np
 import pandas as pd
 import torch
 import yaml
+from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.io import decode_image
-from PIL import Image
-import numpy as np
+
 from utils.load_config import load_config
 
 LABEL_MAP = {
