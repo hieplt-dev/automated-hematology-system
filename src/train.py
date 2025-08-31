@@ -145,14 +145,13 @@ if __name__ == "__main__":
                 running_loss += losses.item()
 
                 # update progress bar
-                train_pg_bar.set_description(f"Train - epoch {epoch+1}/{epochs}. Batch_loss: {losses.item():.2f}. Avg_loss: {(running_loss/(step+1)):.2f}")
+                train_pg_bar.set_description(f"Train-epoch {epoch+1}/{epochs}.Batch_loss: {losses.item():.2f}.Avg_loss: {(running_loss/(step+1)):.2f}")
                 
                 if step % 5 == 0:
                     mlflow.log_metrics({"train_batch_loss": losses.item()},
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
-
             tqdm.write(f"Epoch {epoch+1}/{epochs} | Train loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
@@ -160,17 +159,17 @@ if __name__ == "__main__":
             val_loss_sum = 0.0
             with torch.no_grad():
                 val_pg_bar = tqdm(val_loader, colour="blue")
-                for i, (images, targets) in enumerate(val_loader):
+
+                for i, (images, targets) in enumerate(val_pg_bar):
                     images  = [img.to(device) for img in images]
                     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
                     loss_dict = model(images, targets)
                     batch_loss = sum(loss for loss in loss_dict.values())
                     val_loss_sum += batch_loss
                     
-                    val_pg_bar.set_description(f"Val - epoch {epoch+1}/{epochs}. Batch_loss: {batch_loss.item():.2f}. Avg_loss: {(val_loss_sum/(i+1)):.2f}")
+                    val_pg_bar.set_description(f"Val-epoch {epoch+1}/{epochs}.Batch_loss: {batch_loss.item():.2f}.Avg_loss: {(val_loss_sum/(i+1)):.2f}")
                     
             val_loss = val_loss_sum / max(1, len(val_loader))
-
             tqdm.write(f"Epoch {epoch+1}/{epochs} | Val loss: {val_loss:.4f}")
             mlflow.log_metric("val_loss", val_loss, step=epoch)
             
