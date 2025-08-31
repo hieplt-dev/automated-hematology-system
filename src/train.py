@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # use CLI if different from YAML
     epochs = args.epochs if args.epochs != tr_cfg['epochs'] else tr_cfg['epochs']
     batch_size = args.batch_size if args.batch_size != tr_cfg['batch_size'] else tr_cfg['batch_size']
-    tracking_uri = args.tracking_uri if args.tracking_uri != log_cfg['tracking_uri'] else log_cfg['tracking_uri']
+    tracking_uri = log_cfg['tracking_uri']
     
     lr = tr_cfg['learning_rate']
     optimizer_nm = tr_cfg['optimizer']
@@ -154,6 +154,7 @@ if __name__ == "__main__":
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
+            
             tqdm.write(f"Epoch {epoch+1}/{epochs} | Train loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
@@ -176,6 +177,7 @@ if __name__ == "__main__":
                                            avg_loss=f"{(val_loss_sum/(i+1)):.4f}")
                     
             val_loss = val_loss_sum / max(1, len(val_loader))
+
             tqdm.write(f"Epoch {epoch+1}/{epochs} | Val loss: {val_loss:.4f}")
             mlflow.log_metric("val_loss", val_loss, step=epoch)
             
