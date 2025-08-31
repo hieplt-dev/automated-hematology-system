@@ -152,14 +152,13 @@ if __name__ == "__main__":
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
-            tqdm.write(f"Epoch {epoch+1}/{epochs} | Train loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
             # validation
             val_loss_sum = 0.0
             with torch.no_grad():
                 val_pg_bar = tqdm(val_loader, colour="blue")
-
+                
                 for i, (images, targets) in enumerate(val_pg_bar):
                     images  = [img.to(device) for img in images]
                     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -170,7 +169,6 @@ if __name__ == "__main__":
                     val_pg_bar.set_description(f"Val-epoch {epoch+1}/{epochs}.Batch_loss: {batch_loss.item():.2f}.Avg_loss: {(val_loss_sum/(i+1)):.2f}")
                     
             val_loss = val_loss_sum / max(1, len(val_loader))
-            tqdm.write(f"Epoch {epoch+1}/{epochs} | Val loss: {val_loss:.4f}")
             mlflow.log_metric("val_loss", val_loss, step=epoch)
             
             # save best model
@@ -178,7 +176,7 @@ if __name__ == "__main__":
                 best_val_loss = val_loss
 
                 # save low checkpoint
-                ckpt_path = f"outputs/best_epoch_{epoch+1}.pt"
+                ckpt_path = f"outputs/best_epoch.pt"
                 torch.save({
                     "epoch": epoch+1,
                     "model_state": model.state_dict(),
