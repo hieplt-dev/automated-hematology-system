@@ -2,7 +2,7 @@
 experiment_name: bccd_faster_rcnn
 
 dataset:
-  root: "BCCD_Dataset"
+  root: "../BCCD_Dataset"
   train_subdir: "train"
   test_subdir: "test"
   image_size: 480

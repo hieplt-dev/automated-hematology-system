@@ -153,7 +153,6 @@ if __name__ == "__main__":
                                        step=epoch * len(train_loader) + step)
 
             epoch_loss = running_loss / max(1, len(train_loader))
-            print(f"Epoch {epoch+1}/{epochs} | Train Loss: {epoch_loss:.4f}")
             mlflow.log_metric("train_loss", epoch_loss, step=epoch)
 
             # validation
@@ -171,7 +170,6 @@ if __name__ == "__main__":
                                avg_loss=f"{(val_loss_sum/i):.4f}")
                     
             val_loss = val_loss_sum / max(1, len(val_loader))
-            print(f"Val Loss  : {val_loss:.4f}")
             mlflow.log_metric("val_loss", val_loss, step=epoch)
             
             # save best model
