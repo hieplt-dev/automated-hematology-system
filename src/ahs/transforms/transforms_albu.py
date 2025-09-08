@@ -1,7 +1,6 @@
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-
 def build_train_aug_albu(aug_cfg, image_size):
     return A.Compose(
         [

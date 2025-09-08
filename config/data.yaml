@@ -1,0 +1,7 @@
+root: "BCCD_Dataset"
+image_size: 480
+num_cls: 3
+labels_map:
+  RBC: 1
+  WBC: 2
+  Platelets: 3

@@ -1,0 +1,8 @@
+epochs: 100
+batch_size: 4
+lr: 0.001
+optimizer: "SGD"
+weight_decay: 0.0005
+momentum: 0.9
+output_path: 'experiments/outputs'
+model_summary_path: 'experiments/model_summary.txt'

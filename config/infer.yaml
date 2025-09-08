@@ -1,0 +1,4 @@
+checkpoint: 'experiments/outputs/best.pt'
+score_thresh: 0.5
+image_size: 480
+num_cls: 3
