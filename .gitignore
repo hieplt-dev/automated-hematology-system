@@ -207,3 +207,4 @@ mlruns/
 *.db
 mlartifacts/
 images/
+*.pt

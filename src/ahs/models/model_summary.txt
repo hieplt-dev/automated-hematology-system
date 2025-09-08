@@ -1,0 +1,38 @@
+================================================================================
+Layer (type:depth-idx)                                  Param #
+================================================================================
+FasterRCNN                                              --
+├─GeneralizedRCNNTransform: 1-1                         --
+├─BackboneWithFPN: 1-2                                  --
+│    └─IntermediateLayerGetter: 2-1                     --
+│    │    └─Conv2d: 3-1                                 (9,408)
+│    │    └─FrozenBatchNorm2d: 3-2                      --
+│    │    └─ReLU: 3-3                                   --
+│    │    └─MaxPool2d: 3-4                              --
+│    │    └─Sequential: 3-5                             (212,992)
+│    │    └─Sequential: 3-6                             1,212,416
+│    │    └─Sequential: 3-7                             7,077,888
+│    │    └─Sequential: 3-8                             14,942,208
+│    └─FeaturePyramidNetwork: 2-2                       --
+│    │    └─ModuleList: 3-9                             984,064
+│    │    └─ModuleList: 3-10                            2,360,320
+│    │    └─LastLevelMaxPool: 3-11                      --
+├─RegionProposalNetwork: 1-3                            --
+│    └─AnchorGenerator: 2-3                             --
+│    └─RPNHead: 2-4                                     --
+│    │    └─Sequential: 3-12                            590,080
+│    │    └─Conv2d: 3-13                                771
+│    │    └─Conv2d: 3-14                                3,084
+├─RoIHeads: 1-4                                         --
+│    └─MultiScaleRoIAlign: 2-5                          --
+│    └─TwoMLPHead: 2-6                                  --
+│    │    └─Linear: 3-15                                12,846,080
+│    │    └─Linear: 3-16                                1,049,600
+│    └─FastRCNNPredictor: 2-7                           --
+│    │    └─Linear: 3-17                                4,100
+│    │    └─Linear: 3-18                                16,400
+================================================================================
+Total params: 41,309,411
+Trainable params: 41,087,011
+Non-trainable params: 222,400
+================================================================================

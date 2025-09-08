@@ -2,29 +2,16 @@ import os
 import xml.etree.ElementTree as ET
 
 import cv2
-import numpy as np
-import pandas as pd
 import torch
-import yaml
-from PIL import Image
 from torch.utils.data import Dataset
-from torchvision.io import decode_image
 
-from utils.load_config import load_config
-
-LABEL_MAP = {
-    "RBC": 1,   # Red Blood Cell
-    "WBC": 2,   # White Blood Cell
-    "Platelets": 3  # Platelets
-}
-
-def parse_annotation_xml(xml_path):
+def parse_annotation_xml(xml_path, label_map):
     tree = ET.parse(xml_path)
     root = tree.getroot()
     annos = []
     for obj in root.findall("object"):
         name = obj.find("name").text
-        label = LABEL_MAP.get(name, -1)
+        label = label_map.get(name, -1)
         if label == -1: 
             continue
         b = obj.find("bndbox")
@@ -36,7 +23,7 @@ def parse_annotation_xml(xml_path):
     return annos
 
 class BCCD_DATASET(Dataset):
-    def __init__(self, root='BCCD_Dataset', mode='train', transform=None):
+    def __init__(self, root='BCCD_Dataset', mode='train', transform=None, label_map=None):
         # check mode
         if mode not in ['train','val','test']:
             raise ValueError("Mode should be 'train', 'val' or 'test'")
@@ -51,7 +38,8 @@ class BCCD_DATASET(Dataset):
         # cache annotations
         self.ann = {}
         for img_id in self.ids:
-            anno = parse_annotation_xml(os.path.join(self.ann_dir, img_id + '.xml'))
+            id_path = os.path.join(self.ann_dir, img_id + '.xml')
+            anno = parse_annotation_xml(id_path, label_map)
             self.ann[img_id] = anno
 
     def __len__(self):
@@ -61,7 +49,7 @@ class BCCD_DATASET(Dataset):
         img_id = self.ids[idx]
         img_path = os.path.join(self.img_dir, img_id + '.jpg')
         xml_path = os.path.join(self.ann_dir, img_id + '.xml')
-
+    
         # read image as RGB np.uint8 (HWC)
         img_bgr = cv2.imread(img_path)
         if img_bgr is None:
@@ -95,6 +83,7 @@ class BCCD_DATASET(Dataset):
         # reshape to CHW tensor [0,1]
         img = img.float()/255.0
 
+        # to tensor
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
         labels = torch.as_tensor(labels, dtype=torch.int64)
 
