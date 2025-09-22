@@ -6,5 +6,6 @@ SRC_PATH := src/
 train:  ## Run train
 	$(PYTHON) -m src.ahs.cli.train_cli
 
+## Run inference
 infer:
 	$(PYTHON) -m src.ahs.cli.infer_cli --img_path $(img_path)
