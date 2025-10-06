@@ -5,6 +5,7 @@ import cv2
 import torch
 from torch.utils.data import Dataset
 
+
 def parse_annotation_xml(xml_path, label_map):
     tree = ET.parse(xml_path)
     root = tree.getroot()

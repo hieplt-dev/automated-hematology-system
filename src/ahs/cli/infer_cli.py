@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from src.ahs.utils.load_config import load_config
-from src.ahs.training.infer import infer
 
+from src.ahs.training.infer import infer
+from src.ahs.utils.load_config import load_config
 
 if __name__== '__main__':
     """Parse CLI arguments for infer"""
