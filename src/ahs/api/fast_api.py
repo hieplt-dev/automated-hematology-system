@@ -1,6 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from src.ahs.api.schemas import PredictResponse
 import cv2
 import numpy as np
 import torch
@@ -51,7 +50,7 @@ async def predict(file: UploadFile = File(...), score_thresh: float = 0.5):
 
         # Albumentations expects dict
         transformed = val_transform(image=img_rgb, bboxes=[], labels=[])
-        img_tensor = transformed["image"].float() / 255.0   # (C,H,W) [0,1]
+        img_tensor = transformed["image"].float()/255.0   # (C,H,W) [0,1]
 
         # Inference (don't block event loop in real app; use executor)
         with torch.no_grad():
