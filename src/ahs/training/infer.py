@@ -1,11 +1,13 @@
-import torch
 import cv2
+import torch
+
 from src.ahs.models.faster_rcnn import BCCD_Model
 from src.ahs.transforms.transforms_albu import build_val_aug_albu
-from src.ahs.utils.visualize_img import visualize_img
 from src.ahs.utils.load_config import load_config
+from src.ahs.utils.visualize_img import visualize_img
 
-def infer(img_path, checkpoint="experiments/outputs/best.pts", image_size=480, num_cls=3, score_thresh=0.5):
+
+def infer(img_path, checkpoint="experiments/outputs/best.pt", image_size=480, num_cls=3, score_thresh=0.5):
     # Device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -36,3 +38,5 @@ def infer(img_path, checkpoint="experiments/outputs/best.pts", image_size=480, n
     labels = prediction["labels"][keep]
 
     visualize_img(img_tensor.cpu(), boxes, labels)
+    
+    return boxes, labels

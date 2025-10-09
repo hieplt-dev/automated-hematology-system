@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import torch
 
+
 def visualize_img(img_chw_tensor, boxes_tensor, labels_tensor, show=True, win_name="image"):
     """
     - img_chw_tensor: torch.Tensor shape (C,H,W), pixel [0,1]
