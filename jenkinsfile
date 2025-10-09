@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment{
-        registry = 'lethanhhiep0220/ahs:0.0.1'
+        registry = 'lethanhhiep0220/ahs'
         registryCredential = 'dockerhub'
     }
 
