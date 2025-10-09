@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment{
-        registry = 'hieplt-dev/automated-hematology-system'
+        registry = 'lethanhhiep0220/ahs'
         registryCredential = 'dockerhub'
     }
 
