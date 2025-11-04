@@ -4,7 +4,7 @@ services:
     build:
       context: ./docker
       dockerfile: jenkins.Dockerfile
-    image: jenkins-custom:latest
+    image: jenkins-custom:lst
     container_name: jenkins
     restart: unless-stopped
     privileged: true
