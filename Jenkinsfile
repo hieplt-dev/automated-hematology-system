@@ -51,7 +51,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying models...'
+                echo 'Deploying models..'
                 echo 'Running a script to trigger pull and start a docker container.'
             }
         }
