@@ -37,14 +37,13 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo 'Building image for deployment..'
+                    echo 'Building image for deployment...'
                     // Specify Dockerfile path (-f) and build context (.) because Dockerfile is in docker/
                     dockerImage = docker.build("${registry}:${BUILD_NUMBER}", "-f docker/Dockerfile .")
-                    echo 'Pushing image to dockerhub..'
+                    echo 'Pushing image to dockerhub...'
                     docker.withRegistry('', registryCredential) {
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                        dockerImage.push(GIT_COMMIT_SHORT)
+                        dockerImage.push('lst')
+                        // dockerImage.push(GIT_COMMIT_SHORT)
                     }
                 }
             }
@@ -52,7 +51,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying models..'
-                echo 'Running a script to trigger pull and start a docker container'
+                echo 'Running a script to trigger pull and start a docker container.'
             }
         }
     }

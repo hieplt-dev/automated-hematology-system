@@ -20,7 +20,7 @@ COPY ./src /workspace/src
 COPY ./experiments /workspace/experiments
 COPY ./Makefile /workspace/Makefile
 
-# Expose port and default command
+# expose port for FastAPI (documentation)
 EXPOSE 8000
 
 CMD ["uvicorn", "src.ahs.api.fast_api:app", "--host", "0.0.0.0", "--port", "8000"]
