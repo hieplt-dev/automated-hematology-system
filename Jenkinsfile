@@ -42,9 +42,9 @@ pipeline {
                     dockerImage = docker.build("${registry}:${BUILD_NUMBER}", "-f docker/Dockerfile .")
                     echo 'Pushing image to dockerhub..'
                     docker.withRegistry('', registryCredential) {
-                        dockerImage.push()
+                        // dockerImage.push()
                         dockerImage.push('latest')
-                        dockerImage.push(GIT_COMMIT_SHORT)
+                        // dockerImage.push(GIT_COMMIT_SHORT)
                     }
                 }
             }
