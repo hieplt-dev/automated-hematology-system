@@ -3,14 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 import cv2
 import numpy as np
 import torch
+import os
 
 from src.ahs.models.faster_rcnn import BCCD_Model
 from src.ahs.transforms.transforms_albu import build_val_aug_albu
 
 # Config
-checkpoint = "experiments/outputs/best.pt"
+checkpoint_path = "./experiments/outputs/best_qint8.pt"
 image_size = 480
-score_thresh = 0.5
+score_thresh = 0.5  # default score threshold
 
 app = FastAPI(title="AHS Inference API", version="0.1")
 
@@ -21,12 +22,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Device
+# device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Build model & load weights
-model = BCCD_Model(num_classes=3).model
-model.load_state_dict(torch.load(checkpoint, map_location=device)['model_state'])
+# checkpoint exists
+if not os.path.exists(checkpoint_path):
+    raise FileNotFoundError(f"checkpoint not found: {checkpoint_path}")
+  
+# load whole model object
+model = torch.load(checkpoint_path, map_location=device, weights_only=False)    # model type: torch.nn.Module
 model.to(device)
 model.eval()
 

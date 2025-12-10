@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime
 
 LABEL maintainer="hieplt"
-LABEL organization="mlops"
+LABEL organization="ahs"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git libgl1 libglib2.0-0 && \
@@ -17,7 +17,7 @@ WORKDIR /workspace
 # Copy project files from build context root into image
 # Build this image from project root: `docker build -f docker/Dockerfile -t ahs:latest .`
 COPY ./src /workspace/src
-COPY ./experiments /workspace/experiments
+COPY ./experiments/outputs/best_qint8.pt /workspace/experiments/outputs/best_qint8.pt
 COPY ./Makefile /workspace/Makefile
 
 # expose port for FastAPI (documentation)
