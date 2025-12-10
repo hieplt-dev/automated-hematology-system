@@ -13,3 +13,7 @@ infer:
 ## api
 api:
 	uvicorn src.ahs.api.fast_api:app --host 0.0.0.0 --port 8000 --reload
+
+## Run dynamic quantization
+quantize_dynamic:
+	$(PYTHON) -m scripts.quantize_dynamic

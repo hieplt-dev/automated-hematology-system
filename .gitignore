@@ -207,4 +207,9 @@ mlruns/
 *.db
 mlartifacts/
 images/
+
+# model file
 *.pt
+
+# Ignore secrets folder containing credentials
+iac/ansible/secrets/
