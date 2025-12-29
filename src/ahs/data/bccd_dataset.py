@@ -13,33 +13,36 @@ def parse_annotation_xml(xml_path, label_map):
     for obj in root.findall("object"):
         name = obj.find("name").text
         label = label_map.get(name, -1)
-        if label == -1: 
+        if label == -1:
             continue
         b = obj.find("bndbox")
         xmin = float(b.find("xmin").text)
         ymin = float(b.find("ymin").text)
         xmax = float(b.find("xmax").text)
         ymax = float(b.find("ymax").text)
-        annos.append({"boxes":[xmin,ymin,xmax,ymax], "labels":label})
+        annos.append({"boxes": [xmin, ymin, xmax, ymax], "labels": label})
     return annos
 
+
 class BCCD_DATASET(Dataset):
-    def __init__(self, root='BCCD_Dataset', mode='train', transform=None, label_map=None):
+    def __init__(
+        self, root="BCCD_Dataset", mode="train", transform=None, label_map=None
+    ):
         # check mode
-        if mode not in ['train','val','test']:
+        if mode not in ["train", "val", "test"]:
             raise ValueError("Mode should be 'train', 'val' or 'test'")
-        
+
         self.transform = transform
-        self.img_dir = os.path.join(root, 'BCCD', 'JPEGImages')
-        self.ann_dir = os.path.join(root, 'BCCD', 'Annotations')
-        id_file = os.path.join(root, 'BCCD', 'ImageSets', 'Main', f'{mode}.txt')
-        with open(id_file, 'r') as f:
+        self.img_dir = os.path.join(root, "BCCD", "JPEGImages")
+        self.ann_dir = os.path.join(root, "BCCD", "Annotations")
+        id_file = os.path.join(root, "BCCD", "ImageSets", "Main", f"{mode}.txt")
+        with open(id_file, "r") as f:
             self.ids = [x.strip() for x in f.readlines()]
-        
+
         # cache annotations
         self.ann = {}
         for img_id in self.ids:
-            id_path = os.path.join(self.ann_dir, img_id + '.xml')
+            id_path = os.path.join(self.ann_dir, img_id + ".xml")
             anno = parse_annotation_xml(id_path, label_map)
             self.ann[img_id] = anno
 
@@ -48,9 +51,9 @@ class BCCD_DATASET(Dataset):
 
     def __getitem__(self, idx):
         img_id = self.ids[idx]
-        img_path = os.path.join(self.img_dir, img_id + '.jpg')
-        xml_path = os.path.join(self.ann_dir, img_id + '.xml')
-    
+        img_path = os.path.join(self.img_dir, img_id + ".jpg")
+        xml_path = os.path.join(self.ann_dir, img_id + ".xml")
+
         # read image as RGB np.uint8 (HWC)
         img_bgr = cv2.imread(img_path)
         if img_bgr is None:
@@ -65,10 +68,10 @@ class BCCD_DATASET(Dataset):
         for r in raw:
             xmin, ymin, xmax, ymax = r["boxes"]
             # clamp + fix bad order if any
-            xmin = max(0.0, min(xmin, w-1))
-            ymin = max(0.0, min(ymin, h-1))
-            xmax = max(0.0, min(xmax, w-1))
-            ymax = max(0.0, min(ymax, h-1))
+            xmin = max(0.0, min(xmin, w - 1))
+            ymin = max(0.0, min(ymin, h - 1))
+            xmax = max(0.0, min(xmax, w - 1))
+            ymax = max(0.0, min(ymax, h - 1))
             if xmax <= xmin or ymax <= ymin:
                 continue
             boxes.append([xmin, ymin, xmax, ymax])
@@ -77,12 +80,12 @@ class BCCD_DATASET(Dataset):
         # Albumentations expects uint8 HWC + list bboxes
         if self.transform is not None:
             transformed = self.transform(image=img, bboxes=boxes, labels=labels)
-            img = transformed["image"]              # tensor (C,H,W) [0,1]
-            boxes = transformed["bboxes"]           # list of tuples
-            labels = transformed["labels"]          # list of ints
+            img = transformed["image"]  # tensor (C,H,W) [0,1]
+            boxes = transformed["bboxes"]  # list of tuples
+            labels = transformed["labels"]  # list of ints
 
         # reshape to CHW tensor [0,1]
-        img = img.float()/255.0
+        img = img.float() / 255.0
 
         # to tensor
         boxes = torch.as_tensor(boxes, dtype=torch.float32)

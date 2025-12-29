@@ -3,31 +3,43 @@ import numpy as np
 import torch
 
 
-def visualize_img(img_chw_tensor, boxes_tensor, labels_tensor, show=True, win_name="image"):
+def visualize_img(
+    img_chw_tensor, boxes_tensor, labels_tensor, show=True, win_name="image"
+):
     """
     - img_chw_tensor: torch.Tensor shape (C,H,W), pixel [0,1]
     - boxes_tensor:   torch.Tensor shape (N,4) with (xmin,ymin,xmax,ymax)
     - labels_tensor:  torch.Tensor shape (N,) with int labels
     """
     # to HWC uint8 BGR
-    img = (img_chw_tensor.permute(1,2,0).detach().cpu().numpy() * 255).astype(np.uint8)
+    img = (img_chw_tensor.permute(1, 2, 0).detach().cpu().numpy() * 255).astype(
+        np.uint8
+    )
     image = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-    boxes  = boxes_tensor.detach().cpu().numpy()
+    boxes = boxes_tensor.detach().cpu().numpy()
     labels = labels_tensor.detach().cpu().numpy().astype(int)
 
     # label ↔ name & color
-    id2name  = {1: "RBC", 2: "WBC", 3: "Platelets"}
-    id2color = {1: (0,0,255), 2: (0,255,0), 3: (255,0,0)}  # BGR
+    id2name = {1: "RBC", 2: "WBC", 3: "Platelets"}
+    id2color = {1: (0, 0, 255), 2: (0, 255, 0), 3: (255, 0, 0)}  # BGR
 
     # draw boxes
     for (xmin, ymin, xmax, ymax), label in zip(boxes, labels):
         p1, p2 = (int(xmin), int(ymin)), (int(xmax), int(ymax))
-        color = id2color.get(label, (200,200,200))
-        name  = id2name.get(label, "Unknown")
+        color = id2color.get(label, (200, 200, 200))
+        name = id2name.get(label, "Unknown")
         cv2.rectangle(image, p1, p2, color, 1)
-        cv2.putText(image, name, (p1[0]+6, p1[1]+16),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
+        cv2.putText(
+            image,
+            name,
+            (p1[0] + 6, p1[1] + 16),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            color,
+            1,
+            cv2.LINE_AA,
+        )
 
     # count per class
     counts = {k: 0 for k in id2name.keys()}
@@ -50,26 +62,35 @@ def visualize_img(img_chw_tensor, boxes_tensor, labels_tensor, show=True, win_na
 
     # compute box size from max text width/height
     text_sizes = [cv2.getTextSize(t, font, font_scale, thickness)[0] for t in lines]
-    line_h = max(h for (w,h) in text_sizes)
-    text_w = max(w for (w,h) in text_sizes)
-    box_w = text_w + 2*pad
-    box_h = line_h*len(lines) + 2*pad + (len(lines)-1)*4  # 4px between lines
+    line_h = max(h for (w, h) in text_sizes)
+    text_w = max(w for (w, h) in text_sizes)
+    box_w = text_w + 2 * pad
+    box_h = line_h * len(lines) + 2 * pad + (len(lines) - 1) * 4  # 4px between lines
 
     # anchor at top-right (with 10px margin)
     margin = 10
     x2, y1 = W - margin, margin
-    x1, y2 = x2 - box_w, y1 + box_h+8
+    x1, y2 = x2 - box_w, y1 + box_h + 8
 
     # draw semi-transparent background
     overlay = image.copy()
-    cv2.rectangle(overlay, (x1, y1), (x2, y2), (0,0,0), -1)  # black
+    cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 0), -1)  # black
     alpha = 0.35
     image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
     # put texts (white)
     y = y1 + pad + line_h
     for t in lines:
-        cv2.putText(image, t, (x1 + pad, y), font, font_scale, (255,255,255), thickness, cv2.LINE_AA)
+        cv2.putText(
+            image,
+            t,
+            (x1 + pad, y),
+            font,
+            font_scale,
+            (255, 255, 255),
+            thickness,
+            cv2.LINE_AA,
+        )
         y += line_h + 7
 
     if show:
