@@ -4,14 +4,14 @@
   - name: Bring up the first instance
     gcp_compute_instance:
       name: instance-1
-      machine_type: e2-micro
+      machine_type: e2-medium
       # Refer to https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts
       # or use the command `gcloud compute images list --project=ubuntu-os-cloud`
       zone: asia-northeast1-a
       project: ahsys-480510
       # The service account is needed to create the resources
       auth_kind: serviceaccount
-      service_account_file: ../secrets/ahsys-480510-11cd6b5656b5.json
+      service_account_file: ../secrets/ahsys-480510-844a29b58a02.json
       disks:
         - auto_delete: true
           boot: true
@@ -30,14 +30,14 @@
   - name: Bring up the second instance
     gcp_compute_instance:
       name: instance-2
-      machine_type: e2-micro
+      machine_type: e2-medium
       # Refer to https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts
       # or use the command `gcloud compute images list --project=ubuntu-os-cloud`
       zone: asia-northeast1-a
       project: ahsys-480510
       # The service account is needed to create the resources
       auth_kind: serviceaccount
-      service_account_file: ../secrets/ahsys-480510-11cd6b5656b5.json
+      service_account_file: ../secrets/ahsys-480510-844a29b58a02.json
       disks:
         - auto_delete: true
           boot: true
@@ -68,5 +68,5 @@
       description: Allow incoming traffic on port 30000
       project: ahsys-480510
       auth_kind: serviceaccount
-      service_account_file: ../secrets/ahsys-480510-11cd6b5656b5.json
+      service_account_file: ../secrets/ahsys-480510-844a29b58a02.json
       state: present # change to present to delete the instance
