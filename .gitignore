@@ -213,3 +213,25 @@ images/
 
 # Ignore secrets folder containing credentials
 iac/ansible/secrets/
+
+# terraform
+# Terraform configuration files
+.terraform/          # Local Terraform modules, plugins, and provider cache
+.terraform.lock.hcl  # Terraform dependency lock file (unless you want to commit it)
+
+# Terraform state files
+*.tfstate            # Terraform state file (contains infrastructure state and potentially secrets)
+*.tfstate.*          # Terraform state backup files
+
+# Crash log files
+crash.log
+
+# Secret variable files (do not commit these)
+*.tfvars             # Variable definitions files (can contain sensitive data)
+*.tfvars.json        # Variable definitions files in JSON format
+
+# Cloud-specific files
+.gcloud/
+
+# Terragrunt
+.terragrunt-cache/

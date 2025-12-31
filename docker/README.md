@@ -1,4 +1,4 @@
 ## Build this image from project root: 
-``bash
+```bash
 docker build -f docker/Dockerfile -t ahs:latest .
-``
+```

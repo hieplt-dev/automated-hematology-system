@@ -7,7 +7,7 @@ terraform {
       version = "4.80.0" // Provider version
     }
   }
-  required_version = "1.5.6" // Terraform version
+  required_version = ">= 1.5.6" // Terraform version
 }
 
 // The library with methods for creating and
@@ -20,27 +20,25 @@ provider "google" {
 
 // Google Kubernetes Engine
 resource "google_container_cluster" "my-gke" {
-  name     = "${var.project_id}-new-gke"
+  name     = "${var.project_id}-gke"
   location = var.region
- 
+
+  # Initial node count
+  initial_node_count = 1
+
   // Enabling Autopilot for this cluster
-  enable_autopilot = true
-  
-  # // Enable Istio (beta)
-  # // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#nested_istio_config
-  # // not yet supported on Autopilot mode
-  # addons_config {
-  #   istio_config {
-  #     disabled = false
-  #     auth     = "AUTH_NONE"
-  #   }
-  # }
+  enable_autopilot = false
+  node_config {
+    machine_type = "e2-medium"
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
+  }
 }
 
-resource "google_storage_bucket" "my-bucket" {
-  name          = var.bucket
-  location      = var.region
-  force_destroy = true
+# resource "google_storage_bucket" "my-bucket" {
+#   name          = "my-bucket-${var.project_id}"
+#   location      = var.region
+#   force_destroy = true
 
-  uniform_bucket_level_access = true
-}
+#   uniform_bucket_level_access = true
+# }
