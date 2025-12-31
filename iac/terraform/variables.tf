@@ -2,7 +2,7 @@
 // which can be accessed by var.project_id
 variable "project_id" {
   description = "The project ID to host the cluster in"
-  default     = "decent-mariner-412114"
+  default     = "ahsys-480510"
 }
 
 variable "region" {
@@ -11,6 +11,6 @@ variable "region" {
 }
 
 variable "bucket" {
-  description = "GCS bucket for MLE course"
-  default     = "mle-course"
+  description = "GCS bucket"
+  default     = "mle"
 }

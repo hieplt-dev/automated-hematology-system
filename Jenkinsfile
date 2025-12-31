@@ -17,9 +17,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                script {
-                    GIT_COMMIT_SHORT = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
-                }
             }
         }
         
@@ -48,7 +45,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy to GKE') {
             steps {
                 echo 'Deploying models..'
                 echo 'Running a script to trigger pull and start a docker container.'
