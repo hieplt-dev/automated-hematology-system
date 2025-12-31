@@ -1,0 +1,20 @@
+replicaCount: 2
+
+image:
+  repository: lethanhhiep0220/ahs
+  tag: latest
+
+service:
+  port: 8080
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  host: hematology-api.example.com
+  path: /
+
+model:
+  bucket: my-model-registry
+  name: my_model
+  stage: production
+  file: model.pt

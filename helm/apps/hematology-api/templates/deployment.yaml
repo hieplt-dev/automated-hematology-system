@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: model-volume
+          emptyDir: {}
+
+      initContainers:
+        - name: pull-model
+          image: google/cloud-sdk:slim
+          command:
+            - sh
+            - -c
+            - |
+              gsutil cp \
+                gs://{{ .Values.model.bucket }}/{{ .Values.model.name }}/{{ .Values.model.stage }}/{{ .Values.model.file }} \
+                /models/{{ .Values.model.file }}
+          volumeMounts:
+            - name: model-volume
+              mountPath: /models
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
+          volumeMounts:
+            - name: gcp-key
+              mountPath: /var/secrets/google
+              readOnly: true
+
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: model-volume
+              mountPath: experiments/outputs/

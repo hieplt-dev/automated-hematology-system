@@ -7,7 +7,7 @@ terraform {
       version = "4.80.0" // Provider version
     }
   }
-  required_version = "1.5.6" // Terraform version
+  required_version = ">= 1.5.6" // Terraform version
 }
 
 // The library with methods for creating and
@@ -19,28 +19,38 @@ provider "google" {
 }
 
 // Google Kubernetes Engine
-resource "google_container_cluster" "my-gke" {
-  name     = "${var.project_id}-new-gke"
-  location = var.region
- 
-  // Enabling Autopilot for this cluster
-  enable_autopilot = true
-  
-  # // Enable Istio (beta)
-  # // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#nested_istio_config
-  # // not yet supported on Autopilot mode
-  # addons_config {
-  #   istio_config {
-  #     disabled = false
-  #     auth     = "AUTH_NONE"
-  #   }
-  # }
-}
+# resource "google_container_cluster" "my-gke" {
+#   name     = "${var.project_id}-gke"
+#   location = var.region
 
-resource "google_storage_bucket" "my-bucket" {
-  name          = var.bucket
-  location      = var.region
-  force_destroy = true
+#   # Initial node count
+#   initial_node_count = 1
+
+#   // Enabling Autopilot for this cluster
+#   enable_autopilot = false
+#   node_config {
+#     machine_type = "e2-medium"
+#     disk_type    = "pd-standard"
+#     disk_size_gb = 50
+#   }
+# }
+
+resource "google_storage_bucket" "model_registry" {
+  name     = "${var.project_id}-model-registry"
+  location = var.region
 
   uniform_bucket_level_access = true
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      num_newer_versions = 5
+    }
+    action {
+      type = "Delete"
+    }
+  }
 }
