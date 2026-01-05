@@ -68,12 +68,8 @@ pipeline {
                 }
             }
         }
-<<<<<<< HEAD
 
         stage('Auth to GKE') {
-=======
-        stage('Deploy to GKE') {
->>>>>>> origin
             steps {
                 withCredentials([
                     file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')
