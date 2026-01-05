@@ -17,7 +17,7 @@ WORKDIR /workspace
 # Copy project files from build context root into image
 # Build this image from project root: `docker build -f docker/Dockerfile -t ahs:latest .`
 COPY ./src /workspace/src
-COPY ./experiments/outputs/best_qint8.pt /workspace/experiments/outputs/best_qint8.pt
+COPY ./experiments/outputs /workspace/experiments/outputs
 COPY ./Makefile /workspace/Makefile
 
 # expose port for FastAPI (documentation)

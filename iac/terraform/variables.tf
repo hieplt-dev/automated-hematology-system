@@ -10,7 +10,13 @@ variable "region" {
   default     = "asia-southeast1"
 }
 
+<<<<<<< HEAD
+variable "bucket_name" {
+  description = "Model registry bucket name"
+  default     = "model-registry-bucket"
+=======
 variable "bucket" {
   description = "GCS bucket"
   default     = "mle"
+>>>>>>> origin
 }
