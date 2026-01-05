@@ -12,12 +12,9 @@ ingress:
   enabled: true
   host: hematology-api.example.com
   path: /
-<<<<<<< HEAD
 
 model:
-  bucket: my-model-registry
-  name: my_model
+  bucket: ahsys-480510-model-registry
+  name: hematology-model
   stage: production
-  file: model.pt
-=======
->>>>>>> origin
+  file: best_qint8.pt

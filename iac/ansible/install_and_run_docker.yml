@@ -4,11 +4,7 @@
   become: yes  # To run commands as a superuser (e.g., sudo)
   vars:
     default_container_name: jenkins
-<<<<<<< HEAD
     default_container_image: lethanhhiep0220/custom-jenkins:latest
-=======
-    default_container_image: jenkins/jenkins:lts
->>>>>>> origin
   tasks:
     - name: Install aptitude
       apt:
@@ -45,24 +41,20 @@
         state: latest
         update_cache: true
 
-    - name: Pull the Docker image
+    - name: Pull the custom jenkins image
       community.docker.docker_image:
         name: "{{ default_container_image }}"
         source: pull
 
-    - name: Create the container
+    - name: Create the jenkins container
       community.docker.docker_container:
         name: "{{ default_container_name }}"
         image: "{{ default_container_image }}"
         state: started
         ports:
           - "8080:8080"
-<<<<<<< HEAD
           - "50000:50000"
         detach: yes  # Run the container in the background
         volumes:
           - jenkins_home:/var/jenkins_home
           - /var/run/docker.sock:/var/run/docker.sock
-=======
-        detach: yes  # Run the container in the background
->>>>>>> origin

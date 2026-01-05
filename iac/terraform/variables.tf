@@ -7,16 +7,10 @@ variable "project_id" {
 
 variable "region" {
   description = "The region the cluster in"
-  default     = "asia-southeast1"
+  default     = "asia-southeast2"
 }
 
-<<<<<<< HEAD
 variable "bucket_name" {
   description = "Model registry bucket name"
   default     = "model-registry-bucket"
-=======
-variable "bucket" {
-  description = "GCS bucket"
-  default     = "mle"
->>>>>>> origin
 }

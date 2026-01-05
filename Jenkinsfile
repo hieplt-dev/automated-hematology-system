@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        any
-    }
+    agent any
 
     options{
         // Max number of build logs to keep and days to keep
@@ -12,18 +10,18 @@ pipeline {
 
     environment{
         // ===== Docker Hub =====
-        REGISTRY              = 'lethanhhiep0220/ahs'
+        IMAGE_REGISTRY              = 'lethanhhiep0220/ahs'
         REGISTRY_CREDENTIAL   = 'dockerhub'
 
         // ===== GCP / GKE =====
         GCP_PROJECT   = 'ahsys-480510'
-        GKE_CLUSTER   = 'ahsys-480510-model-registry'
-        GKE_ZONE      = 'asia-southeast1-a'
+        GKE_CLUSTER   = 'ahsys-480510-gke'
+        GKE_ZONE      = 'asia-southeast2'
         K8S_NAMESPACE = 'model-serving'
 
         // ===== Helm =====
-        HELM_RELEASE = 'ahs'
-        HELM_CHART   = 'helm/apps'
+        HELM_RELEASE = 'hematology-api'
+        HELM_CHART   = 'helm/apps/hematology-api'
 
         // ===== Model config (PASS TO HELM, NOT PULLED HERE) =====
         MODEL_BUCKET = 'ahsys-480510-model-registry'
@@ -53,17 +51,12 @@ pipeline {
         stage('Build & Push Image') {
             steps {
                 script {
-                    echo 'Building Docker image...'
-
-                    def image = docker.build(
-                        "${REGISTRY}:${BUILD_NUMBER}",
-                        "-f docker/Dockerfile ."
-                    )
-
-                    docker.withRegistry('', REGISTRY_CREDENTIAL) {
-                        echo 'Pushing Docker image...'
-                        image.push("${BUILD_NUMBER}")
-                        image.push("latest")
+                    echo 'Building image for deployment..'
+                    dockerImage = docker.build(IMAGE_REGISTRY   + ":$BUILD_NUMBER", "-f docker/Dockerfile .")
+                    echo 'Pushing image to dockerhub..'
+                    docker.withRegistry( '', REGISTRY_CREDENTIAL ) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
                     }
                 }
             }
@@ -85,17 +78,28 @@ pipeline {
             }
         }
 
+        stage('Prepare GCP Secret') {
+            steps {
+                sh '''
+                kubectl get secret gcp-sa-key -n model-serving >/dev/null 2>&1 || \
+                kubectl create secret generic gcp-sa-key \
+                    --from-file=$GOOGLE_APPLICATION_CREDENTIALS \
+                    -n model-serving
+                '''
+            }
+        }
+
         stage('Deploy to GKE with Helm') {
             steps {
                 sh '''
                     helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
                       --namespace ${K8S_NAMESPACE} \
                       --create-namespace \
-                      --set image.repository=${REGISTRY} \
-                      --set image.tag=${BUILD_NUMBER} \
-                      --set model.bucket=${MODEL_BUCKET} \
-                      --set model.name=${MODEL_NAME} \
-                      --set model.stage=${MODEL_STAGE}
+                    #   --set image.repository=${REGISTRY} \
+                    #   --set image.tag=${BUILD_NUMBER} \
+                    #   --set model.bucket=${MODEL_BUCKET} \
+                    #   --set model.name=${MODEL_NAME} \
+                    #   --set model.stage=${MODEL_STAGE}
                 '''
             }
         }

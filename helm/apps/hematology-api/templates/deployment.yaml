@@ -12,42 +12,47 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
-<<<<<<< HEAD
       volumes:
         - name: model-volume
           emptyDir: {}
+        - name: gcp-key
+          secret:
+            secretName: gcp-sa-key
 
       initContainers:
         - name: pull-model
-          image: google/cloud-sdk:slim
+          image: google/cloud-sdk:latest
           command:
             - sh
             - -c
+          args:
             - |
+              set -e
+
+              echo "Preparing model directory..."
+              mkdir -p /experiments/outputs/
+
+              echo "Pulling model from GCS..."
               gsutil cp \
                 gs://{{ .Values.model.bucket }}/{{ .Values.model.name }}/{{ .Values.model.stage }}/{{ .Values.model.file }} \
-                /models/{{ .Values.model.file }}
-          volumeMounts:
-            - name: model-volume
-              mountPath: /models
+                /experiments/outputs/{{ .Values.model.file }}
+
+              echo "Model pulled successfully"
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /var/secrets/google/key.json
           volumeMounts:
+            - name: model-volume
+              mountPath: /experiments/outputs/
             - name: gcp-key
               mountPath: /var/secrets/google
               readOnly: true
-
-=======
->>>>>>> origin
+  
       containers:
         - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 8000
-<<<<<<< HEAD
           volumeMounts:
             - name: model-volume
-              mountPath: experiments/outputs/
-=======
->>>>>>> origin
+              mountPath: /workspace/experiments/outputs/

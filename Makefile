@@ -2,7 +2,7 @@ PYTHON := python
 TEST_PATH := tests/
 SRC_PATH := src/
 
-.PHONY: train infer api gce gke quantize_dynamic
+.PHONY: train infer api gce gke quantize_dynamic helm
 train:  ## Run train
 	$(PYTHON) -m src.ahs.cli.train_cli
 
@@ -27,7 +27,7 @@ jenkins_container:
 
 ## Create kubernetes cluster
 k8s:
-	gcloud auth application-default login
+	gcloud auth activate-service-account --key-file=iac/ansible/secrets/ahsys-480510-844a29b58a02.json
 
 	terraform -chdir=iac/terraform init
 	terraform -chdir=iac/terraform plan
