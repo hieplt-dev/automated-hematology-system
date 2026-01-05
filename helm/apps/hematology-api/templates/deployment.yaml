@@ -12,6 +12,7 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
+<<<<<<< HEAD
       volumes:
         - name: model-volume
           emptyDir: {}
@@ -37,11 +38,16 @@ spec:
               mountPath: /var/secrets/google
               readOnly: true
 
+=======
+>>>>>>> origin
       containers:
         - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 8000
+<<<<<<< HEAD
           volumeMounts:
             - name: model-volume
               mountPath: experiments/outputs/
+=======
+>>>>>>> origin

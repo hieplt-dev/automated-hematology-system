@@ -19,6 +19,7 @@ provider "google" {
 }
 
 // Google Kubernetes Engine
+<<<<<<< HEAD
 # resource "google_container_cluster" "my-gke" {
 #   name     = "${var.project_id}-gke"
 #   location = var.region
@@ -54,3 +55,28 @@ resource "google_storage_bucket" "model_registry" {
     }
   }
 }
+=======
+resource "google_container_cluster" "my-gke" {
+  name     = "${var.project_id}-gke"
+  location = var.region
+
+  # Initial node count
+  initial_node_count = 1
+
+  // Enabling Autopilot for this cluster
+  enable_autopilot = false
+  node_config {
+    machine_type = "e2-medium"
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
+  }
+}
+
+# resource "google_storage_bucket" "my-bucket" {
+#   name          = "my-bucket-${var.project_id}"
+#   location      = var.region
+#   force_destroy = true
+
+#   uniform_bucket_level_access = true
+# }
+>>>>>>> origin
