@@ -41,7 +41,7 @@ jenkins_container:
 ## Create kubernetes cluster
 k8s:
 	@echo "Authenticating with GCP..."
-	gcloud auth activate-service-account --key-file=iac/ansible/secrets/ahsys-480510-844a29b58a02.json
+	@gcloud auth activate-service-account --key-file=iac/ansible/secrets/ahsys-480510-844a29b58a02.json
 	@echo "Authentication successful."
 
 	terraform -chdir=iac/terraform init

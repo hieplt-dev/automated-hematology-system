@@ -37,11 +37,7 @@ pipeline {
         }
         
         stage('Test') {
-            agent {
-                docker {
-                    image 'python:3.10' 
-                }
-            }
+            agent { docker { image 'python:3.10' } }
             steps {
                 echo 'Testing model correctness..'
                 // sh 'pytest'
