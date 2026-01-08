@@ -9,7 +9,7 @@ from src.ahs.models.faster_rcnn import BCCD_Model
 from src.ahs.transforms.transforms_albu import build_val_aug_albu
 
 # Config
-checkpoint_path = "./experiments/outputs/best_qint8.pt"
+checkpoint_path = "/models/best_qint8.pt"
 image_size = 480
 score_thresh = 0.5  # default score threshold
 

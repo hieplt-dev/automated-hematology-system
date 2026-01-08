@@ -30,12 +30,12 @@ spec:
               set -e
 
               echo "Preparing model directory..."
-              mkdir -p /experiments/outputs/
+              mkdir -p /models
 
               echo "Pulling model from GCS..."
               gsutil cp \
                 gs://{{ .Values.model.bucket }}/{{ .Values.model.name }}/{{ .Values.model.stage }}/{{ .Values.model.file }} \
-                /experiments/outputs/{{ .Values.model.file }}
+                /models/{{ .Values.model.file }}
 
               echo "Model pulled successfully"
           env:
@@ -43,7 +43,7 @@ spec:
               value: /var/secrets/google/key.json
           volumeMounts:
             - name: model-volume
-              mountPath: /experiments/outputs/
+              mountPath: /models
             - name: gcp-key
               mountPath: /var/secrets/google
               readOnly: true
@@ -55,4 +55,4 @@ spec:
             - containerPort: 8000
           volumeMounts:
             - name: model-volume
-              mountPath: /workspace/experiments/outputs/
+              mountPath: /models
