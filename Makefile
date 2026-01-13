@@ -6,6 +6,7 @@ MODEL_STAGE := production
 GCS_MODEL_PATH := gs://ahsys-480510-model-registry/hematology-model/$(MODEL_STAGE)
 
 .PHONY: train infer api gce gke quantize_dynamic helm push_model
+
 train:  ## Run train
 	$(PYTHON) -m src.ahs.cli.train_cli
 
@@ -58,3 +59,7 @@ helm:
 
 	@echo "Installing Helm chart for hematology-api..."
 	helm upgrade  --install hematology-api helm/apps/hematology-api -n model-serving --create-namespace
+
+kube-prometheus-stack:
+	@echo "Installing Helm chart for kube-prometheus-stack..."
+	helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace
