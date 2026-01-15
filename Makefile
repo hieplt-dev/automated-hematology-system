@@ -4,7 +4,7 @@ MODEL_STAGE := production
 MODEL_PATH := models/best_qint8.pt
 GCS_MODEL_PATH := gs://ahsys-480510-model-registry/hematology-model/$(MODEL_STAGE)
 
-.PHONY: train infer api gce gke quantize_dynamic helm push_model
+.PHONY: train infer api gce gke quantize_dynamic helm_install push_model
 
 train:  ## Run train
 	$(PYTHON) -m src.ahs.cli.train_cli
@@ -49,6 +49,11 @@ push_model:
 	gsutil -m cp $(MODEL_PATH) $(GCS_MODEL_PATH)/
 	@echo "Model uploaded to $(GCS_MODEL_PATH)"
 
+## Install kube-prometheus-stack
+kube-prometheus-stack:
+	@echo "Installing Helm chart for kube-prometheus-stack..."
+	@helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace
+	
 ## Helm install nginx & api
 helm_install:
 	@echo "Setting up Kubernetes cluster role binding..."
@@ -64,8 +69,3 @@ helm_install:
 
 	@echo "Installing Helm chart for grafana ingress..."
 	@helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
-
-## Install kube-prometheus-stack
-kube-prometheus-stack:
-	@echo "Installing Helm chart for kube-prometheus-stack..."
-	@helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace

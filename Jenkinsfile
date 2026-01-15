@@ -25,7 +25,7 @@ pipeline {
 
         // ===== Model config (PASS TO HELM, NOT PULLED HERE) =====
         MODEL_BUCKET = 'ahsys-480510-model-registry'
-        MODEL_NAME   = 'my_model'
+        MODEL_NAME   = 'hematology-model'
         MODEL_STAGE  = 'production'
     }
 
@@ -91,11 +91,10 @@ pipeline {
                     helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
                       --namespace ${K8S_NAMESPACE} \
                       --create-namespace \
-                    #   --set image.repository=${REGISTRY} \
-                    #   --set image.tag=${BUILD_NUMBER} \
-                    #   --set model.bucket=${MODEL_BUCKET} \
-                    #   --set model.name=${MODEL_NAME} \
-                    #   --set model.stage=${MODEL_STAGE}
+                      --set image.tag=${BUILD_NUMBER} \
+                      --set model.bucket=${MODEL_BUCKET} \
+                      --set model.name=${MODEL_NAME} \
+                      --set model.stage=${MODEL_STAGE}
                 '''
             }
         }
