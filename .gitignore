@@ -222,6 +222,8 @@ iac/ansible/secrets/
 # Terraform state files
 *.tfstate            # Terraform state file (contains infrastructure state and potentially secrets)
 *.tfstate.*          # Terraform state backup files
+iac/terraform/terraform.tfstate
+iac/terraform/terraform.tfstate.backup
 
 # Crash log files
 crash.log

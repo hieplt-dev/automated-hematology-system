@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install pip deps (add more as needed)
 RUN pip install --upgrade pip
 RUN pip install torchinfo==1.8.0 opencv-python==4.12.0.88 \
-    albumentations==2.0.8 mlflow==3.3.1 uvicorn fastapi python-multipart
+    albumentations==2.0.8 mlflow==3.3.1 uvicorn fastapi python-multipart prometheus_client
 
 WORKDIR /workspace
 

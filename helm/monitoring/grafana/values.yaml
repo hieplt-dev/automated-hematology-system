@@ -1,0 +1,4 @@
+ingress:
+  host: hematology-api.example.com
+  path: /grafana
+  service: kube-prometheus-stack-grafana
