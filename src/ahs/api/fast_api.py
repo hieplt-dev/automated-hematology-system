@@ -1,14 +1,18 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+import os
+import time
+
 import cv2
 import numpy as np
 import torch
-import os
-from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
-
-from fastapi import Response
-import time
-
+from fastapi import FastAPI, File, HTTPException, Response, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+)
 
 from src.ahs.models.faster_rcnn import BCCD_Model
 from src.ahs.transforms.transforms_albu import build_val_aug_albu
@@ -81,6 +85,7 @@ val_transform = build_val_aug_albu(image_size)
 async def health():
     return {"status": "ok"}
 
+
 # expose metrics endpoint
 @app.get("/metrics")
 def metrics():
@@ -132,7 +137,9 @@ async def predict(file: UploadFile = File(...), score_thresh: float = 0.5):
         # Convert tensors to Python-native types for JSON response
         boxes = boxes_t.cpu().numpy().tolist() if boxes_t.numel() else []
         labels = labels_t.cpu().numpy().astype(int).tolist() if labels_t.numel() else []
-        scores = scores_t.cpu().numpy().astype(float).tolist() if scores_t.numel() else []
+        scores = (
+            scores_t.cpu().numpy().astype(float).tolist() if scores_t.numel() else []
+        )
 
         # Increment successful request counter
         HTTP_REQUESTS_TOTAL.labels("POST", "/predict", "200").inc()

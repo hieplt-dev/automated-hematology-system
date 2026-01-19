@@ -3,6 +3,7 @@ from time import sleep
 import requests
 from loguru import logger
 
+
 def predict():
     logger.info("Sending POST requests!")
     files = {
@@ -15,8 +16,9 @@ def predict():
         },
         files=files,
     )
-    
+
     # logger.info(f"Response: {response.json()}")
+
 
 if __name__ == "__main__":
     while True:
