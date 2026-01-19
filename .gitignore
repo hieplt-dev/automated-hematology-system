@@ -237,3 +237,6 @@ crash.log
 
 # Terragrunt
 .terragrunt-cache/
+
+# Commit message instructions
+.commit-message-instructions.md

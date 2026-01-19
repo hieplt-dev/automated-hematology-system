@@ -4,7 +4,7 @@ MODEL_STAGE := production
 MODEL_PATH := models/best_qint8.pt
 GCS_MODEL_PATH := gs://ahsys-480510-model-registry/hematology-model/$(MODEL_STAGE)
 
-.PHONY: train infer api gce gke quantize_dynamic helm_install push_model
+.PHONY: train infer api gce gke quantize_dynamic helm_install push_model alertmanager prometheus
 
 train:  ## Run train
 	$(PYTHON) -m src.ahs.cli.train_cli
@@ -21,7 +21,8 @@ api:
 quantize_dynamic:
 	$(PYTHON) -m scripts.quantize_dynamic
 
-## Create Compute Engine & Jenkins instances
+## Create Compute Engine
+## note: replace project ID, zone, machine type in create_compute_instance.yaml
 instances:
 	ansible-playbook iac/ansible/create_compute_instance.yaml
 
@@ -39,7 +40,7 @@ k8s:
 	terraform -chdir=iac/terraform plan
 	terraform -chdir=iac/terraform apply
 
-## Push model to GCS
+## Push model to GCS (optional)
 push_model:
 	@echo "Authenticating with GCP..."
 	@gcloud auth activate-service-account --key-file=iac/ansible/secrets/ahsys-480510-844a29b58a02.json
@@ -52,8 +53,8 @@ push_model:
 ## Install kube-prometheus-stack
 kube-prometheus-stack:
 	@echo "Installing Helm chart for kube-prometheus-stack..."
-	@helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace
-	
+	@helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace -f helm/monitoring/prometheus/values.yaml
+
 ## Helm install nginx & api
 helm_install:
 	@echo "Setting up Kubernetes cluster role binding..."
@@ -64,8 +65,15 @@ helm_install:
 	@echo "Installing NGINX Ingress Controller..."
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.14.1/deploy/static/provider/cloud/deploy.yaml
 
+	@echo "Waiting for NGINX Ingress Controller to be ready..."
+	@sleep 30
+
 	@echo "Installing Helm chart for hematology-api..."
-	@helm upgrade --install hematology-api helm/apps/hematology-api -n model-serving --create-namespace
+	helm upgrade --install hematology-api helm/apps/hematology-api -n model-serving --create-namespace
 
 	@echo "Installing Helm chart for grafana ingress..."
-	@helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
+	helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
+
+alertmanager:
+	@echo "Applying PrometheusRule..."
+	kubectl apply -f helm/monitoring/alertmanager/prometheus-rule.yaml -n monitoring

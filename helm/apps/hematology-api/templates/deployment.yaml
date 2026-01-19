@@ -53,7 +53,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8000
+            - name: metrics
+              containerPort: 8000
           volumeMounts:
             - name: model-volume
               mountPath: /models

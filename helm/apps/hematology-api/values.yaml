@@ -10,7 +10,7 @@ service:
 
 ingress:
   enabled: true
-  host: hematology-api.example.com
+  host: api.example.com
   path: /
 
 model:

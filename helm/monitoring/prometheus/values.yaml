@@ -1,0 +1,22 @@
+prometheus:
+  prometheusSpec:
+    podMonitorSelector:
+      matchLabels:
+        team: monitoring
+
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+    podMonitorNamespaceSelector:
+      matchNames:
+        - model-serving
+
+alertmanager:
+  config:
+    global:
+      slack_api_url: https://hooks.slack.com/services/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
+  alertmanagerSpec:
+    alertmanagerConfigNamespaceSelector:
+    alertmanagerConfigSelector:
+    alertmanagerConfigMatcherStrategy:
+      type: None
