@@ -97,8 +97,11 @@ pipeline {
                           --set model.bucket=${MODEL_BUCKET} \
                           --set model.name=${MODEL_NAME} \
                           --set model.stage=${MODEL_STAGE} \
-                          --set alertmanager.config.global.slack_api_url=${SLACK_URL} \
-                          -f helm/monitoring/prometheus/values.yaml
+                          --set alertmanager.config.global.slack_api_url=${SLACK_URL}
+                        
+                        helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace \
+                          -f helm/monitoring/prometheus/values.yaml \
+                          --set alertmanager.config.global.slack_api_url=${SLACK_URL}
                         
                         kubectl apply -f helm/monitoring/alertmanager/prometheus-rule.yaml -n monitoring
 
