@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: global-alert-manager-configuration
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  receivers:
+    - name: slack-notifications
+      slackConfigs:
+        - channel: "#all-alert-manager" # your channel name that you have created
+          sendResolved: true
+          iconEmoji: ":bell:"
+          text: "<!channel> \nsummary: {{ .CommonAnnotations.summary }}\ndescription: {{ .CommonAnnotations.description }}\nmessage: {{ .CommonAnnotations.message }}"
+  route:
+    matchers:
+      # name of the label to match
+      - name: app
+        value: hematology-api
+        matchType: =
+    groupBy: ["job", "severity"]
+    groupWait: 30s
+    receiver: slack-notifications
+    groupInterval: 1m
+    repeatInterval: 1m

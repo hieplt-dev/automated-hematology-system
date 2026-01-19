@@ -10,7 +10,7 @@ pipeline {
 
     environment{
         // ===== Docker Hub =====
-        IMAGE_REGISTRY              = 'lethanhhiep0220/ahs'
+        IMAGE_REGISTRY        = 'lethanhhiep0220/ahs'
         REGISTRY_CREDENTIAL   = 'dockerhub'
 
         // ===== GCP / GKE =====
@@ -85,17 +85,26 @@ pipeline {
             }
         }
 
-        stage('Deploy to GKE with Helm') {
+        stage('Deploy Monitoring with Helm') {
             steps {
-                sh '''
-                    helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
-                      --namespace ${K8S_NAMESPACE} \
-                      --create-namespace \
-                      --set image.tag=${BUILD_NUMBER} \
-                      --set model.bucket=${MODEL_BUCKET} \
-                      --set model.name=${MODEL_NAME} \
-                      --set model.stage=${MODEL_STAGE}
-                '''
+                // take slack api url from jenkins credential
+                withCredentials([string(credentialsId: 'slack-api-url', variable: 'SLACK_URL')]) {
+                    sh '''
+                        helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
+                          --namespace ${K8S_NAMESPACE} \
+                          --create-namespace \
+                          --set image.tag=${BUILD_NUMBER} \
+                          --set model.bucket=${MODEL_BUCKET} \
+                          --set model.name=${MODEL_NAME} \
+                          --set model.stage=${MODEL_STAGE} \
+                          --set alertmanager.config.global.slack_api_url=${SLACK_URL} \
+                          -f helm/monitoring/prometheus/values.yaml
+                        
+                        kubectl apply -f helm/monitoring/alertmanager/prometheus-rule.yaml -n monitoring
+
+                        kubectl apply -f helm/monitoring/alertmanager/alert-config.yml -n monitoring
+                    '''
+                }
             }
         }
     }
