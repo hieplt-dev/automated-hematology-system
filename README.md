@@ -79,7 +79,7 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/automated-hematology-system.git
+    git clone https://github.com/hieplt-dev/automated-hematology-system.git
     cd automated-hematology-system
     ```
 
@@ -93,8 +93,48 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 3.  **Install Dependencies:**
     Dependencies are managed directly via `pip`. Refer to the `docker/Dockerfile` for the definitive list, or install common packages:
     ```bash
-    pip install torch torchvision opencv-python albumentations mlflow fastapi uvicorn
+    pip install -r requirements.txt
     ```
+
+## Infrastructure Provisioning
+
+This project uses **Infrastructure as Code (IaC)** to provision resources on Google Cloud Platform (GCP).
+
+### 1. Google Cloud Setup
+
+- Ensure you have a GCP project created (default: `ahsys-480510`).
+- Create a Service Account with `Editor` permissions.
+- Download the JSON key file and place it at: `iac/ansible/secrets/ahsys-480510-844a29b58a02.json` (update the filename in `iac/ansible/create_compute_instance.yaml` if different).
+
+### 2. Jenkins Server Provisioning (Ansible)
+
+Provision a Compute Engine instance for Jenkins and install the necessary software.
+
+1.  **Create the instance:**
+
+    ```bash
+    make instances
+    ```
+
+    This runs the Ansible playbook to create a VM named `jenkins` and configures firewall rules (port 8080).
+
+2.  **Install & Run Jenkins:**
+    Update the `iac/ansible/inventory` file with the external IP of the created instance, then run:
+    ```bash
+    make jenkins_container
+    ```
+
+### 3. GKE Cluster Provisioning (Terraform)
+
+Provision the Google Kubernetes Engine (GKE) cluster.
+
+```bash
+make k8s
+```
+
+This command initializes Terraform and applies the configuration to create the cluster in the `asia-southeast1` region.
+
+![GKE](iac/terraform/imgs/gke.png)
 
 ## Usage
 
@@ -142,19 +182,29 @@ The project utilizes **Jenkins** for orchestration. The pipeline `Jenkinsfile` d
     - Deploys/Updates the **Prometheus** monitoring stack.
     - Applies alerting rules.
 
+![Jenkins](iac/ansible/imgs/jenkins_pipeline.png)
+
 ## Results & Monitoring
 
 The system includes a comprehensive monitoring stack.
 
 - **Prometheus**: Scrapes metrics from the application (exposed via `/metrics`) and Kubernetes nodes.
-- **Grafana**: Visualization dashboards for API performance (RPS, Latency) and Node health (CPU, Memory).
-- **Alerting**: Slack notifications are configured for critical events (via Alertmanager).
 
 To view metrics (locally via port-forwarding):
 
 ```bash
-kubectl port-forward svc/prometheus-operated 9090:9090 -n monitoring
+kubectl port-forward svc/kube-prometheus-stack-prometheus 9090:9090 -n monitoring
 ```
+
+![Prometheus](helm/monitoring/prometheus/imgs/prometheus.png)
+
+- **Grafana**: Visualization dashboards for API performance (RPS, Latency) and Node health (CPU, Memory).
+
+![Grafana](helm/monitoring/grafana/imgs/grafana.png)
+
+- **Alerting**: Slack notifications are configured for critical events (via Alertmanager).
+
+![Alert](helm/monitoring/alertmanager/imgs/alert-manager-slack.png)
 
 ## Contributing
 

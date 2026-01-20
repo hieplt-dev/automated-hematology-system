@@ -7,7 +7,7 @@ from loguru import logger
 def predict():
     logger.info("Sending POST requests!")
     files = {
-        "file": open("images/ga.png", "rb"),
+        "file": open("images/test.png", "rb"),
     }
     response = requests.post(
         "http://api.example.com/predict",
