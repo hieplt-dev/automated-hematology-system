@@ -1,2 +1,2 @@
 [servers_1]
-35.243.76.131 ansible_ssh_private_key_file=/home/hieplt/.ssh/gcp_key
+34.104.164.27 ansible_ssh_private_key_file=/home/hieplt/.ssh/gcp_key

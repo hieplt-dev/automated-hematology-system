@@ -1,0 +1,14 @@
+replicaCount: 1
+
+image:
+  repository: lethanhhiep0220/ahs.ui
+  tag: latest
+
+service:
+  port: 8501
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  host: ui.example.com
+  path: /

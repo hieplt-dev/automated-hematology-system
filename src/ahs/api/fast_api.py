@@ -16,6 +16,7 @@ from prometheus_client import (
 
 from src.ahs.models.faster_rcnn import BCCD_Model
 from src.ahs.transforms.transforms_albu import build_val_aug_albu
+from src.ahs.api.storage import StorageClient
 
 # Prometheus metrics
 HTTP_REQUESTS_TOTAL = Counter(
@@ -56,6 +57,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Initialize Storage Client
+storage_client = StorageClient()
+
+# Mount static files
+from fastapi.staticfiles import StaticFiles
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -145,12 +156,30 @@ async def predict(file: UploadFile = File(...), score_thresh: float = 0.5):
         HTTP_REQUESTS_TOTAL.labels("POST", "/predict", "200").inc()
 
         # Return inference result
-        return {
+        result = {
             "boxes": boxes,
             "labels": labels,
             "scores": scores,
             "meta": {"num_boxes": len(labels)},
         }
+
+        # Save to storage if available
+        if storage_client.s3:
+            timestamp = int(time.time())
+            filename = f"{timestamp}_{file.filename}"
+            
+            # Reset file pointer to beginning to read bytes again for upload, 
+            # or just use the bytes we already read
+            # content is already in variable `contents`
+            
+            image_key = storage_client.upload_image(contents, filename)
+            
+            if image_key:
+                result["image_key"] = image_key
+                # Save full result with image reference
+                storage_client.upload_json(result, f"{timestamp}.json")
+
+        return result
 
     except ValueError as e:
         # Client-side error (invalid input image)
@@ -170,3 +199,22 @@ async def predict(file: UploadFile = File(...), score_thresh: float = 0.5):
 
         # Decrease in-flight request gauge
         IN_FLIGHT_REQUESTS.dec()
+
+
+@app.get("/history")
+async def get_history(limit: int = 50):
+    if not storage_client.s3:
+        return []
+    return storage_client.list_history(limit=limit)
+
+
+@app.get("/images/{key:path}")
+async def get_image(key: str):
+    if not storage_client.s3:
+        raise HTTPException(status_code=404, detail="Storage not available")
+    
+    content = storage_client.get_file_content(key)
+    if content is None:
+        raise HTTPException(status_code=404, detail="Image not found")
+        
+    return Response(content, media_type="image/png")

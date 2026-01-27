@@ -1,0 +1,35 @@
+# Default values for MinIO (Bitnami)
+# https://github.com/bitnami/charts/tree/main/bitnami/minio
+
+auth:
+  rootUser: "minioadmin"
+  rootPassword: "minioadmin"
+
+# Single node mode is sufficient for this project
+mode: standalone
+
+# Persistence configuration for GKE
+persistence:
+  enabled: true
+  storageClass: "standard" # Standard GKE storage class
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+# Network configuration
+service:
+  type: ClusterIP # Internal access only
+  ports:
+    api: 9000
+    console: 9001
+
+# Resources
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+# Buckets to create on startup
+defaultBuckets: "ahs-predictions"

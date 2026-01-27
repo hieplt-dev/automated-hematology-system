@@ -85,7 +85,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Monitoring with Helm') {
+        stage('Helm Upgrade') {
             steps {
                 // take slack api url from jenkins credential
                 withCredentials([string(credentialsId: 'slack-api-url', variable: 'SLACK_URL')]) {
@@ -98,6 +98,8 @@ pipeline {
                           --set model.name=${MODEL_NAME} \
                           --set model.stage=${MODEL_STAGE} \
                           --set alertmanager.config.global.slack_api_url=${SLACK_URL}
+
+                        helm upgrade --install hematology-ui helm/apps/hematology-ui -n ui --create-namespace
                         
                         helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace \
                           -f helm/monitoring/prometheus/values.yaml \

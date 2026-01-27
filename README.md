@@ -116,7 +116,7 @@ Provision a Compute Engine instance for Jenkins and install the necessary softwa
     make instances
     ```
 
-    This runs the Ansible playbook to create a VM named `jenkins` and configures firewall rules (port 8080).
+    This runs the Ansible playbook to create a VM named `jenkins` and configures firewall rules (port 8080 - default Jenkins port).
 
 2.  **Install & Run Jenkins:**
     Update the `iac/ansible/inventory` file with the external IP of the created instance, then run:
