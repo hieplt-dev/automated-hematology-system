@@ -16,7 +16,9 @@ spec:
         - name: ui
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: API_URL
+              value: "http://hematology-api.model-serving:8080"
           ports:
             - name: ui
               containerPort: 8501
-

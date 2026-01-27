@@ -6,7 +6,7 @@ from loguru import logger
 
 class StorageClient:
     def __init__(self):
-        self.endpoint_url = os.getenv("S3_ENDPOINT_URL")
+        self.endpoint_url = os.getenv("S3_ENDPOINT")
         self.access_key = os.getenv("S3_ACCESS_KEY")
         self.secret_key = os.getenv("S3_SECRET_KEY")
         self.bucket_name = os.getenv("S3_BUCKET_NAME")

@@ -47,10 +47,13 @@ spec:
             - name: gcp-key
               mountPath: /var/secrets/google
               readOnly: true
-  
+
       containers:
         - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          envFrom:
+            - secretRef:
+                name: minio-credentials
           imagePullPolicy: IfNotPresent
           ports:
             - name: metrics

@@ -80,6 +80,14 @@ helm_install:
 minio:
 	helm repo add minio https://charts.min.io/
 	helm upgrade --install minio --set rootUser=rootuser,rootPassword=rootpass123 minio/minio -f helm/storage/minio/values.yaml -n storage --create-namespace --timeout 10m --wait
+	
+	@echo "Creating minio-credentials secret..."
+	kubectl create secret generic minio-credentials \
+		-n model-serving \
+		--from-literal=S3_ENDPOINT="$S3_ENDPOINT_URL" \
+		--from-literal=S3_ACCESS_KEY="$S3_ACCESS_KEY" \
+		--from-literal=S3_SECRET_KEY="$S3_SECRET_KEY"\
+		--from-literal=S3_BUCKET_NAME="$S3_BUCKET_NAME"
 
 alertmanager:
 	@echo "Applying PrometheusRule..."
