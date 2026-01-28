@@ -55,6 +55,12 @@ kube-prometheus-stack:
 	@echo "Installing Helm chart for kube-prometheus-stack..."
 	@helm upgrade --install kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack -n monitoring --create-namespace -f helm/monitoring/prometheus/values.yaml
 
+	@echo "Applying PrometheusRule..."
+	kubectl apply -f helm/monitoring/alertmanager/prometheus-rule.yaml -n monitoring
+
+	@echo "Installing Helm chart for grafana ingress..."
+	helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
+
 ## Helm install nginx & api
 helm_install:
 	@echo "Setting up Kubernetes cluster role binding..."
@@ -74,8 +80,6 @@ helm_install:
 	@echo "Installing Helm chart for hematology-ui..."
 	helm upgrade --install hematology-ui helm/apps/hematology-ui -n ui --create-namespace
 
-	@echo "Installing Helm chart for grafana ingress..."
-	helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
 minio:
 	helm repo add minio https://charts.min.io/
 	helm upgrade --install minio minio/minio -n minio -f helm/storage/minio/values.yaml --create-namespace
@@ -87,7 +91,3 @@ minio:
 		--from-literal=S3_ACCESS_KEY="$S3_ACCESS_KEY" \
 		--from-literal=S3_SECRET_KEY="$S3_SECRET_KEY"\
 		--from-literal=S3_BUCKET_NAME="$S3_BUCKET_NAME"
-
-alertmanager:
-	@echo "Applying PrometheusRule..."
-	kubectl apply -f helm/monitoring/alertmanager/prometheus-rule.yaml -n monitoring

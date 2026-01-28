@@ -23,6 +23,7 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 - **Machine Learning**: PyTorch, Albumentations, OpenCV
 - **Experiment Tracking**: MLflow
 - **Model Serving**: FastAPI, Uvicorn
+- **User Interface**: Streamlit
 - **Containerization**: Docker
 - **Orchestration**: Kubernetes (GKE), Helm
 - **CI/CD**: Jenkins
@@ -35,6 +36,7 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 - **Scalable Inference API**: High-performance FastAPI server for real-time predictions.
 - **GitOps-style Deployment**: Helm charts for application and monitoring stack management.
 - **Infrastructure Automation**: Ansible playbooks for instance provisioning and Terraform for GKE cluster management.
+- **Interactive UI**: Streamlit web interface for visualizing predictions and interacting with the system.
 - **Observability**: Integrated Prometheus metrics for monitoring API latency, request counts, and system resources.
 
 ## Project Structure
@@ -135,6 +137,45 @@ make k8s
 This command initializes Terraform and applies the configuration to create the cluster in the `asia-southeast1` region.
 
 ![GKE](iac/terraform/imgs/gke.png)
+
+## UI Deployment
+
+The project includes a Streamlit-based User Interface for interacting with the model directly.
+
+### 1. Deploy to GKE
+Deploy the UI to the `ui` namespace using Helm:
+
+```bash
+helm upgrade --install hematology-ui helm/apps/hematology-ui -n ui --create-namespace
+```
+
+### 2. Accessing the UI
+
+The UI is exposed via an **Nginx Ingress** controller.
+
+1.  **Get the Ingress IP Address:**
+    ```bash
+    kubectl get ingress -n ui
+    ```
+    Wait until the `ADDRESS` field (External IP) is populated.
+
+2.  **Configure DNS (Local)**:
+    Add the usage domain to your `/etc/hosts` file (replace `<INGRESS_IP>` with the actual IP):
+    ```text
+    <INGRESS_IP> ui.example.com
+    ```
+
+3.  **Access**:
+    Open your browser and navigate to: [http://ui.example.com](http://ui.example.com)
+
+    > **Alternative (Port-Forwarding)**:
+    > If you don't have an Ingress controller set up or want quick local access:
+    > ```bash
+    > kubectl port-forward svc/hematology-ui 8501:8501 -n ui
+    > ```
+    > Access at: `http://localhost:8501`
+    
+    ![ui-demo](./images/ui-demo.gif)
 
 ## Usage
 
