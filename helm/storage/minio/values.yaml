@@ -2,8 +2,13 @@
 # https://github.com/bitnami/charts/tree/main/bitnami/minio
 
 auth:
-  rootUser: "minioadmin"
-  rootPassword: "minioadmin"
+  rootUser: "admin"
+  rootPassword: "admin"
+
+users:
+  - accessKey: admin
+    secretKey: admin
+    policy: readwrite
 
 # Single node mode is sufficient for this project
 mode: standalone

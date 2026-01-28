@@ -3,7 +3,7 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = "4.80.0" // Provider version
     }
   }
@@ -14,8 +14,8 @@ terraform {
 // managing the infrastructure in GCP, this will
 // apply to all the resources in the project
 provider "google" {
-  project     = var.project_id
-  region      = var.region
+  project = var.project_id
+  region  = var.region
 }
 
 // Google Kubernetes Engine
@@ -28,7 +28,7 @@ resource "google_container_cluster" "my-gke" {
 
   // true if enabling Autopilot for this cluster
   enable_autopilot = false
-  
+
   node_config {
     machine_type = "e2-medium"
     disk_type    = "pd-standard"
@@ -38,7 +38,7 @@ resource "google_container_cluster" "my-gke" {
 
 // Google Cloud Storage bucket for model registry
 resource "google_storage_bucket" "model_registry" {
-  name     = "${var.project_id}-model-registry"
+  name     = "${var.project_id}-model-registry-internal"
   location = var.region
 
   uniform_bucket_level_access = true

@@ -24,7 +24,7 @@ pipeline {
         HELM_CHART   = 'helm/apps/hematology-api'
 
         // ===== Model config (PASS TO HELM, NOT PULLED HERE) =====
-        MODEL_BUCKET = 'ahsys-480510-model-registry'
+        MODEL_BUCKET = 'ahsys-480510-model-registry-internal'
         MODEL_NAME   = 'hematology-model'
         MODEL_STAGE  = 'production'
     }

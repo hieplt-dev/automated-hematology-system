@@ -2,7 +2,7 @@ PYTHON := python
 MODEL_STAGE := production
 
 MODEL_PATH := models/best_qint8.pt
-GCS_MODEL_PATH := gs://ahsys-480510-model-registry/hematology-model/$(MODEL_STAGE)
+GCS_MODEL_PATH := gs://ahsys-480510-model-registry-internal/hematology-model/$(MODEL_STAGE)
 
 .PHONY: train infer api gce gke quantize_dynamic helm_install push_model alertmanager prometheus minio
 
@@ -76,11 +76,10 @@ helm_install:
 
 	@echo "Installing Helm chart for grafana ingress..."
 	helm upgrade --install grafana-ingress helm/monitoring/grafana -n monitoring --create-namespace
-
 minio:
 	helm repo add minio https://charts.min.io/
-	helm upgrade --install minio --set rootUser=rootuser,rootPassword=rootpass123 minio/minio -f helm/storage/minio/values.yaml -n storage --create-namespace --timeout 10m --wait
-	
+	helm upgrade --install minio minio/minio -n minio -f helm/storage/minio/values.yaml --create-namespace
+
 	@echo "Creating minio-credentials secret..."
 	kubectl create secret generic minio-credentials \
 		-n model-serving \

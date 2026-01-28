@@ -14,7 +14,7 @@ ingress:
   path: /
 
 model:
-  bucket: ahsys-480510-model-registry
+  bucket: ahsys-480510-model-registry-internal
   name: hematology-model
   stage: production
   file: best_qint8.pt
