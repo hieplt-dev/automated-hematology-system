@@ -13,6 +13,7 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 - **Continuous Training (CT)**: (Infrastructure ready) Pipelines for model retraining and evaluation.
 - **Model Serving**: Scalable REST API using FastAPI.
 - **Monitoring**: Real-time system and model health tracking with Prometheus and Grafana.
+- **Interactive UI**: Streamlit web interface for visualizing predictions and interacting with the system.
 
 ## Architecture
 
@@ -34,6 +35,8 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 
 - **Automated Model Training**: Configurable training pipelines using YAML.
 - **Scalable Inference API**: High-performance FastAPI server for real-time predictions.
+- **Model Quantization**: Deploys quantized models (int8) to reduce memory footprint and improve latency.
+- **Data Persistence**: Automatically saves inference images and results to MinIO object storage.
 - **GitOps-style Deployment**: Helm charts for application and monitoring stack management.
 - **Infrastructure Automation**: Ansible playbooks for instance provisioning and Terraform for GKE cluster management.
 - **Interactive UI**: Streamlit web interface for visualizing predictions and interacting with the system.
