@@ -40,6 +40,7 @@ This repository implements a complete **MLOps lifecycle**, featuring:
 - **GitOps-style Deployment**: Helm charts for application and monitoring stack management.
 - **Infrastructure Automation**: Ansible playbooks for instance provisioning and Terraform for GKE cluster management.
 - **Interactive UI**: Streamlit web interface for visualizing predictions and interacting with the system.
+- **Horizontal Pod Autoscaling**: Automatically scales the API pods based on CPU utilization (default target: 80%) to ensure high availability and resource efficiency.
 - **Observability**: Integrated Prometheus metrics for monitoring API latency, request counts, and system resources.
 
 ## Project Structure
